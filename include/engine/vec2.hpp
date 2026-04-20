@@ -51,53 +51,53 @@ struct Vec2 {
 
     // Operator overloads for arithmetic //
 
-    inline Vec2 operator-(this const Vec2& v) noexcept {
-        return Vec2 { -v.x, -v.y };
+    inline Vec2 operator-() const noexcept {
+        return Vec2 { -this->x, -this->y };
     }
 
-    inline Vec2 operator+(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        return { v_1.x + v_2.x, v_1.y + v_2.y };
+    inline Vec2 operator+(const Vec2& rhs) const noexcept {
+        return { this->x + rhs.x, this->y + rhs.y };
     }
 
-    inline Vec2 operator-(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        return { v_1.x - v_2.x, v_1.y - v_2.y };
+    inline Vec2 operator-(const Vec2& rhs) const noexcept {
+        return { this->x - rhs.x, this->y - rhs.y };
     }
 
-    inline Vec2 operator*(this const Vec2& v, float scalar) noexcept {
-        return { v.x * scalar, v.y * scalar };
+    inline Vec2 operator*(float scalar) const noexcept {
+        return { this->x * scalar, this->y * scalar };
     }
 
     // Special case, because saying `2 * v` is sometimes nicer than `v * 2`.
     friend Vec2 operator*(float scalar, const Vec2& v) noexcept;
 
-    inline Vec2 operator/(this const Vec2& v, float scalar) noexcept {
-        return { v.x / scalar, v.y * scalar };
+    inline Vec2 operator/(float scalar) const noexcept {
+        return { this->x / scalar, this->y * scalar };
     }
 
     // Operator assignments (why aren't these overloaded automatically smh)
 
-    inline Vec2& operator+=(this Vec2& v_dest, const Vec2& src) noexcept {
-        v_dest.x += src.x;
-        v_dest.y += src.y;
-        return v_dest;
+    inline Vec2& operator+=(const Vec2& src) noexcept {
+        this->x += src.x;
+        this->y += src.y;
+        return *this;
     }
 
-    inline Vec2& operator-=(this Vec2& v_dest, const Vec2& src) noexcept {
-        v_dest.x -= src.x;
-        v_dest.y -= src.y;
-        return v_dest;
+    inline Vec2& operator-=(const Vec2& src) noexcept {
+        this->x -= src.x;
+        this->y -= src.y;
+        return *this;
     }
 
-    inline Vec2& operator*=(this Vec2& v_dest, float scalar) noexcept {
-        v_dest.x *= scalar;
-        v_dest.y *= scalar;
-        return v_dest;
+    inline Vec2& operator*=(float scalar) noexcept {
+        this->x *= scalar;
+        this->y *= scalar;
+        return *this;
     }
 
-    inline Vec2& operator/=(this Vec2& v_dest, float scalar) noexcept {
-        v_dest.x /= scalar;
-        v_dest.y /= scalar;
-        return v_dest;
+    inline Vec2& operator/=(float scalar) noexcept {
+        this->x /= scalar;
+        this->y /= scalar;
+        return *this;
     }
 
     // Non-operator math functions //
@@ -113,14 +113,14 @@ struct Vec2 {
     }
 
     // Dot product
-    inline float dot(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        return (v_1.x * v_2.x) + (v_1.y * v_2.y);
+    inline float dot(const Vec2& rhs) const noexcept {
+        return (this->x * rhs.x) + (this->y * rhs.y);
     }
 
     // Dubbed 2D cross product sometimes, because it's equal to the length of `(v_1.x, v_1.y, 0) × (v_2.x, v_2.y, 0)`.
     // Also the determinant of the 2D matrix whose columns are `v_1` and `v_2`. Useful fore some calculations.
-    inline float cross_2d(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        return (v_1.x * v_2.y) - (v_1.y * v_2.x);
+    inline float cross_2d(const Vec2& rhs) const noexcept {
+        return (this->x * rhs.y) - (this->y * rhs.x);
     }
 
     inline float angle_to(const Vec2& other) const noexcept {
@@ -135,42 +135,42 @@ struct Vec2 {
     // Comparison operators // 
 
     // Susceptible to floating point precision errors. Recommended to use `.approx_eq` instead.
-    inline bool operator==(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        return (v_1.x == v_2.x && v_1.y == v_2.y);
+    inline bool operator==(const Vec2& rhs) const noexcept {
+        return (this->x == rhs.x && this->y == rhs.y);
     }
 
-    inline bool operator!=(this const Vec2& v_1, const Vec2 v_2) noexcept {
-        return (v_1.x != v_2.x || v_1.y != v_2.y);
+    inline bool operator!=(const Vec2 rhs) const noexcept {
+        return (this->x != rhs.x || this->y != rhs.y);
     }
 
     // Uses lexicographical ordering.
-    inline bool operator<(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        if(v_1.x == v_2.x) {
-            return (v_1.y < v_2.y);
+    inline bool operator<(const Vec2& rhs) const noexcept {
+        if(this->x == rhs.x) {
+            return (this->y < rhs.y);
         }
-        return (v_1.x < v_2.x);
+        return (this->x < rhs.x);
     }
 
     // Uses lexicographical ordering.
-    inline bool operator<=(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        if(v_1.x == v_2.x) {
-            return (v_1.y <= v_2.y);
+    inline bool operator<=(const Vec2& rhs) const noexcept {
+        if(this->x == rhs.x) {
+            return (this->y <= rhs.y);
         }
-        return (v_1.x < v_2.x);
+        return (this->x < rhs.x);
     }
 
     // Uses lexicographical ordering.
-    inline bool operator>(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        return v_2 < v_1;
+    inline bool operator>(const Vec2& rhs) const noexcept {
+        return rhs < *this;
     }
 
     // Uses lexicographical ordering.
-    inline bool operator>=(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        return v_2 <= v_1;
+    inline bool operator>=(const Vec2& rhs) const noexcept {
+        return rhs <= *this;
     }
 
-    inline bool approx_eq(this const Vec2& v_1, const Vec2& v_2) noexcept {
-        return prim::approx_eq(v_1.x, v_2.x) && prim::approx_eq(v_1.y, v_2.y);
+    inline bool approx_eq(const Vec2& rhs) noexcept {
+        return prim::approx_eq(this->x, rhs.x) && prim::approx_eq(this->y, rhs.y);
     }
 
     inline bool is_unit() const noexcept {
@@ -198,63 +198,63 @@ struct Vec2 {
     }
 
     // Returns the result of lerping `from` to `to` by factor `t`.
-    inline Vec2 lerp(this const Vec2& from, const Vec2& to, float t) noexcept {
+    inline Vec2 lerp(const Vec2& to, float t) noexcept {
         return {
-            std::lerp(from.x, to.x, t),
-            std::lerp(from.y, to.y, t)
+            std::lerp(this->x, to.x, t),
+            std::lerp(this->y, to.y, t)
         };
     }
 
     // Returns the result of lerping `from` to `to` by factors `ts` component-wise.
     // That is, the `x` components are lerped by `ts.x` and similarly for the `y`s.
     // Will this be useful ever?
-    inline Vec2 lerp_component_wise(this const Vec2& from, const Vec2& to, const Vec2& ts) noexcept {
+    inline Vec2 lerp_component_wise(const Vec2& to, const Vec2& ts) noexcept {
         return {
-            std::lerp(from.x, to.x, ts.x),
-            std::lerp(from.y, to.y, ts.y)
+            std::lerp(this->x, to.x, ts.x),
+            std::lerp(this->y, to.y, ts.y)
         };
     }
 
     // Lerps `from` towards `to` by factor `t` inplace, modifying `from`.
-    inline void lerp_inplace(this Vec2& from, const Vec2& to, float t) noexcept {
-        prim::lerp_inplace(from.x, to.x, t);
-        prim::lerp_inplace(from.y, to.y, t);
+    inline void lerp_inplace(const Vec2& to, float t) noexcept {
+        prim::lerp_inplace(this->x, to.x, t);
+        prim::lerp_inplace(this->y, to.y, t);
     }
 
     // Lerps `from` towards `to` by factors `ts` component-wise and inplace, modifying `from`.
-    inline void lerp_inplace_component_wise(this Vec2& from, const Vec2& to, const Vec2& ts) noexcept {
-        prim::lerp_inplace(from.x, to.x, ts.x);
-        prim::lerp_inplace(from.y, to.y, ts.y);
+    inline void lerp_inplace_component_wise(const Vec2& to, const Vec2& ts) noexcept {
+        prim::lerp_inplace(this->x, to.x, ts.x);
+        prim::lerp_inplace(this->y, to.y, ts.y);
     }
 
     // Component-wise or Hadamard product. Useful for scaling on non-square proportions.
-    inline Vec2 component_wise_product(this const Vec2& v_1, const Vec2& v_2) noexcept {
+    inline Vec2 component_wise_product(const Vec2& rhs) noexcept {
         return {
-            v_1.x * v_2.x,
-            v_1.y * v_2.y
+            this->x * rhs.x,
+            this->y * rhs.y
         };
     }
 
     // Is to `.component_wise_product()` what `operator*=` is to `operator*`.
-    inline Vec2& component_wise_multiply(this Vec2& v_1, const Vec2& v_2) noexcept {
-        v_1.x *= v_2.x;
-        v_1.y *= v_2.y;
-        return v_1;
+    inline Vec2& component_wise_multiply(const Vec2& rhs) noexcept {
+        this->x *= rhs.x;
+        this->y *= rhs.y;
+        return *this;
     }
 
     // Inverse of component-wise product.
-    inline Vec2 component_wise_division(this const Vec2& v_1, const Vec2& v_2) noexcept {
+    inline Vec2 component_wise_division(const Vec2& rhs) noexcept {
         return {
-            v_1.x / v_2.x,
-            v_1.y / v_2.y
+            this->x / rhs.x,
+            this->y / rhs.y
         };
     }
 
     // Is to `.component_wise_division()` what `operator/=` is to `operator/`.
-    inline Vec2& component_wise_divide(this Vec2& v_1, const Vec2& v_2) noexcept {
-        v_1.x /= v_2.x;
-        v_1.y /= v_2.y;
-        return v_1;
+    inline Vec2& component_wise_divide(const Vec2& rhs) noexcept {
+        this->x /= rhs.x;
+        this->y /= rhs.y;
+        return *this;
     }
 
     // Converts to Raylib's `Vector2` struct.
