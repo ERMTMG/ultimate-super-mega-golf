@@ -25,7 +25,7 @@ all: ./bin/main
 	g++ -c $< $(COMPILEFLAGS) -o $@
 
 setup: 
-	mkdir -p bin/ obj/imgui/backends obj/src/engine
+	mkdir -p bin/ obj/imgui/backends obj/src/engine/phys
 
 clean:
 	rm ./bin/main $(OBJ_FILES)
