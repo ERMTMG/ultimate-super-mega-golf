@@ -5,6 +5,7 @@
 #include <limits>
 #include <raylib.h>
 #include <sys/cdefs.h>
+#include <utility>
 
 #include "math.hpp"
 
@@ -184,7 +185,7 @@ struct Vec2 {
         this->y /= len;
     }
 
-    // version of `.normalized()` that checks if the vector has norm zero, and does nothing if so. 
+    // version of `.normalize()` that checks if the vector has norm zero, and does nothing if so. 
     // Returns `true` if the vector was modified (i.e. if it doesn't have length zero)
     inline bool normalize_checked() noexcept {
         float len_squared = this->x * this->x + this->y * this->y;
@@ -195,6 +196,34 @@ struct Vec2 {
             return true;
         }
         return false;
+    }
+
+    // Returns a vector with the same direction as `*this` and length one, without modifying the vector. Calling this on a vector with length zero is not accounted for.
+    inline Vec2 normalized() const noexcept {
+        float len = std::sqrt(this->x * this->x + this->y * this->y);
+        return { this->x / len, this->y / len };
+    }
+
+    // Version of `.normalized()` that checks if the vector has norm zero, and returns `Vec2::Zero` if so.
+    inline Vec2 normalized_checked() const noexcept {
+        float len_squared = this->x * this->x + this->y * this->y;
+        if(len_squared != 0.0f && len_squared != -0.0f) {
+            float len = std::sqrt(len_squared);
+            return { this->x / len, this->y / len };
+        }
+        return Vec2::Zero;
+    }
+
+    // Decomposes the vector into separate direction (unit vector) and magnitude, collected in an `std::pair`.
+    // Faster than calling `.normalized()` and `.len()` separately.
+    // Returns `{ Vec2::Zero, 0.f }` on a vector with length zero.
+    inline std::pair<Vec2, float> dir_mag() const noexcept {
+        float len_squared = this->x * this->x + this->y * this->y;
+        if(len_squared != 0.0f && len_squared != -0.0f) {
+            float len = std::sqrt(len_squared);
+            return { Vec2 { this->x / len, this->y / len }, len };
+        }
+        return { Vec2::Zero, 0.f };
     }
 
     // Returns the result of lerping `from` to `to` by factor `t`.

@@ -108,10 +108,18 @@ void Body::set_position(const Vec2Meters& new_position) noexcept {
     this->m_position = new_position;
 }
 
+void Body::move_by(const Vec2Meters& increment) noexcept {
+    this->m_position += increment;
+}
+
 float Body::rotation() const noexcept { return this->m_rotation; }
 
 void Body::set_rotation(float new_rotation) noexcept { 
     this->m_rotation = new_rotation;
+}
+
+void Body::rotate_by(float increment) noexcept {
+    this->m_rotation += increment;
 }
 
 }

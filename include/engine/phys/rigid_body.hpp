@@ -57,10 +57,16 @@ class Body {
     static Body rectangle_with_density(const Vec2Meters& size, const Vec2Meters& position, bool is_static, GramsPerCentimeterSq density, float restitution = DefaultRestitution) noexcept;
 
     const Shape& shape() const noexcept;
+
     const Vec2Meters& position() const noexcept;
     void set_position(const Vec2Meters& new_position) noexcept;
+    // Increments the position instead of outright setting it.
+    void move_by(const Vec2Meters& increment) noexcept;
+
     float rotation() const noexcept;
     void set_rotation(float new_rotation) noexcept; 
+    // Increments the rotation instead of outright setting it.
+    void rotate_by(float increment) noexcept;
 };
 
 
