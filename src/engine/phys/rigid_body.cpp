@@ -1,6 +1,7 @@
 #include "engine/phys/rigid_body.hpp"
 #include "engine/math.hpp"
 #include "engine/phys/collision_shapes.hpp"
+#include "engine/phys/collision_tests.hpp"
 #include "engine/phys/units.hpp"
 #include "engine/vec2.hpp"
 #include <cmath>
@@ -115,6 +116,8 @@ void Body::move_by(const Vec2Meters& increment) noexcept {
 
 const Vec2MetersPerSec& Body::linear_velocity() const noexcept { return this->m_linear_velocity; }
 
+void Body::stop() noexcept { this->m_linear_velocity = Vec2MetersPerSec::Zero; }
+
 void Body::add_velocity(const Vec2MetersPerSec& increment) noexcept {
     this->m_linear_velocity += increment;
 }
@@ -130,6 +133,8 @@ void Body::rotate_by(float increment) noexcept {
 }
 
 Kilograms Body::mass() const noexcept { return m_properties.mass; }
+
+bool Body::is_static() const noexcept { return m_static; }
 
 void Body::apply_impulse(Vec2NewtonSeconds impulse) noexcept {
     if(std::isfinite(this->m_properties.mass)) {
@@ -148,6 +153,13 @@ Vec2Meters Body::local_to_global_pos(const Vec2Meters& local_pos) const noexcept
 
 void Body::update(Seconds dt) {
     m_position += m_linear_velocity * dt;
+}
+
+collision::CollisionRecord Body::get_collision_with(const Body& other) const noexcept {
+    const auto& this_shape = this->shape();
+    const auto& other_shape = other.shape();
+
+    return get_collision_info(this_shape, other_shape, this->position(), other.position());
 }
 
 }

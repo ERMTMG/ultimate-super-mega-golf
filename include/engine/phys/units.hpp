@@ -15,6 +15,7 @@ using Vec2MetersPerSecSq = Vec2; // Unit of acceleration (Vec2)
 using RadiansPerSec = float; // Unit of angular velocity
 
 using Kilograms = float; // Unit of mass
+using InvKilograms = float;
 using MetersSq = float; // Unit of area
 
 using KilogramsPerMeterSq = float; // Unit of density

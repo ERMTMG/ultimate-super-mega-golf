@@ -1,6 +1,7 @@
 #pragma once
 
 #include "collision_shapes.hpp"
+#include "engine/phys/collision_tests.hpp"
 #include "units.hpp"
 
 namespace prim::phys {
@@ -65,6 +66,8 @@ class Body {
     void move_by(const Vec2Meters& increment) noexcept;
 
     const Vec2MetersPerSec& linear_velocity() const noexcept;
+    // Sets velocity to zero
+    void stop() noexcept;
     void add_velocity(const Vec2MetersPerSec& increment) noexcept;
 
     float rotation() const noexcept;
@@ -73,6 +76,7 @@ class Body {
     void rotate_by(float increment) noexcept;
 
     Kilograms mass() const noexcept;
+    bool is_static() const noexcept;
 
     void apply_impulse(Vec2NewtonSeconds impulse) noexcept;
 
@@ -80,6 +84,8 @@ class Body {
     Vec2Meters local_to_global_pos(const Vec2Meters& local_pos) const noexcept;
 
     void update(Seconds dt);
+
+    collision::CollisionRecord get_collision_with(const Body& other) const noexcept;
 };
 
 

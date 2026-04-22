@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <raylib.h>
 #include <vector>
+#include "engine/phys/collision_tests.hpp"
 #include "engine/phys/units.hpp"
 #include "rigid_body.hpp"
 
@@ -15,6 +16,8 @@ class World {
     float m_units_per_meter;
     bool m_gravity_enabled;
     
+    void resolve_collision(Body& body_a, Body& body_b, const collision::CollisionRecord& collision) noexcept;
+
   public:  
     using BodyId = size_t;
     static constexpr size_t DefaultWorldCapacity = 32;

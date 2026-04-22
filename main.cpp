@@ -18,8 +18,8 @@ int main(int, char**) {
 
     ::Camera2D camera { .offset = { 400.f, 300.f }, .target = { 0.f, 0.f }, .rotation = 0.f, .zoom = 1.f };
     World world;
-    world.add_body(Body::circle(500.f, Vec2Meters { 0.f, 500.f }, true, std::numeric_limits<Kilograms>::infinity()));
-    world.add_body(Body::circle(0.5f, Vec2Meters { 0.f, -10.f }, false, 1.f));
+    world.add_body(Body::circle(20.f, Vec2Meters { 0.f, 20.f }, true, std::numeric_limits<Kilograms>::infinity()));
+    world.add_body(Body::circle(0.5f, Vec2Meters { 3.f, -10.f }, false, 1.f));
 
     while(!WindowShouldClose()) {
         Seconds dt = GetFrameTime();

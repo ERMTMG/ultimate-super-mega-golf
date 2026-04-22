@@ -1,8 +1,11 @@
 #include "engine/phys/world.hpp"
 #include "engine/phys/collision_shapes.hpp"
+#include "engine/phys/collision_tests.hpp"
 #include "engine/phys/rigid_body.hpp"
 #include "engine/phys/units.hpp"
 #include "engine/vec2.hpp"
+#include <cmath>
+#include <cstddef>
 #include <raylib.h>
 #include <utility>
 #include <vector>
@@ -23,6 +26,20 @@ Body& World::get_body(World::BodyId id) {
     return m_bodies.at(id);
 }
 
+void World::resolve_collision(Body& body_a, Body& body_b, const collision::CollisionRecord& collision) noexcept {
+    body_a.stop();
+    body_b.stop();
+    InvKilograms inv_mass_a = 1.0 / body_a.mass();
+    InvKilograms inv_mass_b = 1.0 / body_b.mass();
+    float multiplier_to_move_a = inv_mass_a / (inv_mass_a + inv_mass_b);
+    float multiplier_to_move_b = inv_mass_b / (inv_mass_a + inv_mass_b);
+    Vec2Meters contact_point_a_global = body_a.local_to_global_pos(collision.relative_contact_pos_a);
+    Vec2Meters contact_point_b_global = body_b.local_to_global_pos(collision.relative_contact_pos_b);
+    Vec2Meters move_direction = contact_point_b_global - contact_point_a_global;
+    body_a.move_by(move_direction * multiplier_to_move_a);
+    body_b.move_by(-move_direction * multiplier_to_move_b);
+}
+
 void World::update(Seconds dt) {
     if(m_gravity_enabled) {
         for(auto& body : m_bodies) {
@@ -34,6 +51,22 @@ void World::update(Seconds dt) {
 
     for(auto& body : m_bodies) {
         body.update(dt);
+    }
+
+    size_t n = m_bodies.size();
+    for(size_t i = 0; i < n; i++) {
+        for(size_t j = i + 1; j < n; j++) {
+            auto& body_i = m_bodies[i];
+            auto& body_j = m_bodies[j];
+            if( (!std::isfinite(body_i.mass()) && !std::isfinite(body_j.mass()))
+             || (body_i.is_static() && body_j.is_static()) ) {
+                continue; // Bodies with infinite mass and static bodies aren't gonna move anyway
+            } 
+            auto collision = body_i.get_collision_with(body_j);
+            if(collision.hit) {
+                resolve_collision(body_i, body_j, collision);
+            }
+        }
     }
 }
 
