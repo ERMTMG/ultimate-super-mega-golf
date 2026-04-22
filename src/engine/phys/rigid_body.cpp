@@ -3,6 +3,7 @@
 #include "engine/phys/collision_shapes.hpp"
 #include "engine/phys/units.hpp"
 #include "engine/vec2.hpp"
+#include <cmath>
 #include <numbers>
 
 namespace prim::phys {
@@ -112,6 +113,12 @@ void Body::move_by(const Vec2Meters& increment) noexcept {
     this->m_position += increment;
 }
 
+const Vec2MetersPerSec& Body::linear_velocity() const noexcept { return this->m_linear_velocity; }
+
+void Body::add_velocity(const Vec2MetersPerSec& increment) noexcept {
+    this->m_linear_velocity += increment;
+}
+
 float Body::rotation() const noexcept { return this->m_rotation; }
 
 void Body::set_rotation(float new_rotation) noexcept { 
@@ -120,6 +127,27 @@ void Body::set_rotation(float new_rotation) noexcept {
 
 void Body::rotate_by(float increment) noexcept {
     this->m_rotation += increment;
+}
+
+Kilograms Body::mass() const noexcept { return m_properties.mass; }
+
+void Body::apply_impulse(Vec2NewtonSeconds impulse) noexcept {
+    if(std::isfinite(this->m_properties.mass)) {
+        this->m_linear_velocity += impulse / m_properties.mass;
+    }
+}
+
+Vec2Meters Body::global_to_local_pos(const Vec2Meters& global_pos) const noexcept {
+    Vec2Meters temp = global_pos - this->m_position;
+    return temp.rotated_by(-m_rotation);
+}
+
+Vec2Meters Body::local_to_global_pos(const Vec2Meters& local_pos) const noexcept {
+    return local_pos.rotated_by(m_rotation) + this->m_position;
+}
+
+void Body::update(Seconds dt) {
+    m_position += m_linear_velocity * dt;
 }
 
 }

@@ -9,7 +9,7 @@
 
 namespace prim::phys {
 
-World::World() : m_bodies{}, m_units_per_meter{World::DefaultUnitsPerMeter} {
+World::World() : m_bodies{}, m_gravity{DefaultGravity}, m_units_per_meter{World::DefaultUnitsPerMeter}, m_gravity_enabled(true) {
     m_bodies.reserve(World::DefaultWorldCapacity);
 }
 
@@ -23,8 +23,18 @@ Body& World::get_body(World::BodyId id) {
     return m_bodies.at(id);
 }
 
-void World::update(Seconds /* unused */) {
-    // Left blank
+void World::update(Seconds dt) {
+    if(m_gravity_enabled) {
+        for(auto& body : m_bodies) {
+            Kilograms mass = body.mass();
+            Vec2NewtonSeconds gravity_impulse = mass * m_gravity * dt;
+            body.apply_impulse(gravity_impulse);
+        }
+    }
+
+    for(auto& body : m_bodies) {
+        body.update(dt);
+    }
 }
 
 void World::draw(const ::Camera2D& camera, Seconds /* unused */) const {

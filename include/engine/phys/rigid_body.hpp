@@ -7,7 +7,7 @@ namespace prim::phys {
 
 class Body {
   private:
-    Vec2Meters m_position;
+    Vec2Meters m_position; // Specifically, the position of the center of mass
     Vec2MetersPerSec m_linear_velocity;
     float m_rotation;
     RadiansPerSec m_angular_velocity;
@@ -56,6 +56,7 @@ class Body {
 
     static Body rectangle_with_density(const Vec2Meters& size, const Vec2Meters& position, bool is_static, GramsPerCentimeterSq density, float restitution = DefaultRestitution) noexcept;
 
+
     const Shape& shape() const noexcept;
 
     const Vec2Meters& position() const noexcept;
@@ -63,10 +64,22 @@ class Body {
     // Increments the position instead of outright setting it.
     void move_by(const Vec2Meters& increment) noexcept;
 
+    const Vec2MetersPerSec& linear_velocity() const noexcept;
+    void add_velocity(const Vec2MetersPerSec& increment) noexcept;
+
     float rotation() const noexcept;
     void set_rotation(float new_rotation) noexcept; 
     // Increments the rotation instead of outright setting it.
     void rotate_by(float increment) noexcept;
+
+    Kilograms mass() const noexcept;
+
+    void apply_impulse(Vec2NewtonSeconds impulse) noexcept;
+
+    Vec2Meters global_to_local_pos(const Vec2Meters& global_pos) const noexcept;
+    Vec2Meters local_to_global_pos(const Vec2Meters& local_pos) const noexcept;
+
+    void update(Seconds dt);
 };
 
 

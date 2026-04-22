@@ -10,6 +10,7 @@ using MetersPerSec = float; // Unit of velocity
 
 using Vec2Meters = Vec2; // Unit of length and distance (Vec2)
 using Vec2MetersPerSec = Vec2; // Unit of velocity (Vec2)
+using Vec2MetersPerSecSq = Vec2; // Unit of acceleration (Vec2)
 
 using RadiansPerSec = float; // Unit of angular velocity
 
@@ -30,6 +31,8 @@ inline KilogramsPerMeterSq to_kg_per_m2(GramsPerCentimeterSq d) {
     static constexpr float MULTIPLIER = 10.f;
     return d * MULTIPLIER;
 }
+
+using Vec2NewtonSeconds = Vec2; // Unit of impulse and momentum (Vec2)
 
 }
 
