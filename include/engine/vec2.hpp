@@ -226,6 +226,49 @@ struct Vec2 {
         return { Vec2::Zero, 0.f };
     }
 
+    // Returns the result of rotating `*this` around the point `(0,0)` by `angle` radians counterclockwise.
+    inline Vec2 rotated_by(float angle) const noexcept {
+        float sin_angle = std::sin(angle);
+        float cos_angle = std::cos(angle);
+        return {
+            this->x * cos_angle - this->y * sin_angle,
+            this->x * sin_angle + this->y * cos_angle
+        };
+    }
+
+    // Rotates `*this` inplace by `angle` radians counterclockwise around the point `(0,0)`.
+    inline void rotate_by(float angle) noexcept {
+        float sin_angle = std::sin(angle);
+        float cos_angle = std::cos(angle);
+        float new_x = this->x * cos_angle - this->y * sin_angle;
+        float new_y = this->x * sin_angle + this->y * cos_angle;
+        this->x = new_x;
+        this->y = new_y;
+    }
+
+    // Returns the result of rotating `*this` around the specified `origin` by `angle` radians counterclockwise.
+    inline Vec2 rotated_by(float angle, const Vec2& origin) const noexcept {
+        float sin_angle = std::sin(angle);
+        float cos_angle = std::cos(angle);
+        // (*this - origin).rotated_by(angle) + origin
+        float offset_x = this->x - origin.x;
+        float offset_y = this->y - origin.y;
+        return {
+            offset_x * cos_angle - offset_y * sin_angle + origin.x,
+            offset_x * sin_angle + offset_y * cos_angle + origin.y
+        };
+    }
+
+    // Rotates `*this` inplace around the specified `origin` by `angle` radians counterclockwise.
+    inline void rotate_by(float angle, const Vec2& origin) noexcept {
+        float sin_angle = std::sin(angle);
+        float cos_angle = std::cos(angle);
+        float offset_x = this->x - origin.x;
+        float offset_y = this->y - origin.y;
+        this->x = offset_x * cos_angle - offset_y * sin_angle + origin.x, // No need to create temporary new_* values because these rhs's don't refer to this
+        this->y = offset_x * sin_angle + offset_y * cos_angle + origin.y;
+    }
+
     // Returns the result of lerping `from` to `to` by factor `t`.
     inline Vec2 lerp(const Vec2& to, float t) noexcept {
         return {
