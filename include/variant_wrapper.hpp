@@ -55,4 +55,8 @@ struct VariantWrapper : std::variant<Ts...> {
         ((!std::is_same_v<T, Ts> && ++i) && ...); // Usa la cortocircuitación de && al encontrar `false` 
         return i;
     }
+
+    constexpr static size_t num_variants() noexcept {
+        return sizeof...(Ts);
+    }
 };

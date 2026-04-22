@@ -1,10 +1,13 @@
 #pragma once
 
 #include "engine/vec2.hpp"
+
 namespace prim::phys::collision {
 
 struct CollisionRecord {
-    Vec2 normal;
+    Vec2 normal; // Pushes second body (B) away from first body (A)!
+    Vec2 relative_contact_pos_a;
+    Vec2 relative_contact_pos_b;
     float collision_depth;
     bool hit;
 
