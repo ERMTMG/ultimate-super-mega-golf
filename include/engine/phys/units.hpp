@@ -33,6 +33,7 @@ inline KilogramsPerMeterSq to_kg_per_m2(GramsPerCentimeterSq d) {
     return d * MULTIPLIER;
 }
 
+using NewtonSeconds = float; // Unit of impulse and momentum
 using Vec2NewtonSeconds = Vec2; // Unit of impulse and momentum (Vec2)
 
 }

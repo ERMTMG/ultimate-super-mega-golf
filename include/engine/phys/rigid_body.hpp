@@ -77,6 +77,8 @@ class Body {
 
     Kilograms mass() const noexcept;
     bool is_static() const noexcept;
+    // Returns the inverse of the mass for non-static bodies and zero for static ones, since static bodies are considered to have infinite mass.
+    InvKilograms effective_inv_mass() const noexcept;
 
     void apply_impulse(Vec2NewtonSeconds impulse) noexcept;
 

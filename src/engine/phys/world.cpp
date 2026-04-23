@@ -26,11 +26,29 @@ Body& World::get_body(World::BodyId id) {
     return m_bodies.at(id);
 }
 
+const Body& World::get_body(World::BodyId id) const {
+    return m_bodies.at(id);
+}
+
+void World::set_gravity(const Vec2MetersPerSecSq& gravity) noexcept {
+    m_gravity = gravity;
+}
+void World::disable_gravity() noexcept {
+    m_gravity_enabled = false;
+}
+
+
 void World::resolve_collision(Body& body_a, Body& body_b, const collision::CollisionRecord& collision) noexcept {
-    body_a.stop();
-    body_b.stop();
-    InvKilograms inv_mass_a = 1.0 / body_a.mass();
-    InvKilograms inv_mass_b = 1.0 / body_b.mass();
+    InvKilograms inv_mass_a = body_a.effective_inv_mass();
+    InvKilograms inv_mass_b = body_b.effective_inv_mass();
+
+    Vec2MetersPerSec velocity_diff = body_a.linear_velocity() - body_b.linear_velocity();
+    NewtonSeconds impulse_quantity = -2.0f * velocity_diff.dot(collision.normal) / (inv_mass_a + inv_mass_b);
+    Vec2NewtonSeconds impulse_vec  = impulse_quantity * collision.normal;
+
+    body_b.apply_impulse(-impulse_vec);
+    body_a.apply_impulse(impulse_vec);
+
     float multiplier_to_move_a = inv_mass_a / (inv_mass_a + inv_mass_b);
     float multiplier_to_move_b = inv_mass_b / (inv_mass_a + inv_mass_b);
     Vec2Meters contact_point_a_global = body_a.local_to_global_pos(collision.relative_contact_pos_a);
@@ -38,6 +56,8 @@ void World::resolve_collision(Body& body_a, Body& body_b, const collision::Colli
     Vec2Meters move_direction = contact_point_b_global - contact_point_a_global;
     body_a.move_by(move_direction * multiplier_to_move_a);
     body_b.move_by(-move_direction * multiplier_to_move_b);
+
+    
 }
 
 void World::update(Seconds dt) {
@@ -58,8 +78,7 @@ void World::update(Seconds dt) {
         for(size_t j = i + 1; j < n; j++) {
             auto& body_i = m_bodies[i];
             auto& body_j = m_bodies[j];
-            if( (!std::isfinite(body_i.mass()) && !std::isfinite(body_j.mass()))
-             || (body_i.is_static() && body_j.is_static()) ) {
+            if(body_i.effective_inv_mass() == 0.0f && body_j.effective_inv_mass() == 0.0f) {
                 continue; // Bodies with infinite mass and static bodies aren't gonna move anyway
             } 
             auto collision = body_i.get_collision_with(body_j);

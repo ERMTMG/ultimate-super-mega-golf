@@ -4,6 +4,7 @@
 #include "engine/phys/collision_tests.hpp"
 #include "engine/phys/units.hpp"
 #include "engine/vec2.hpp"
+#include <cassert>
 #include <cmath>
 #include <numbers>
 
@@ -21,8 +22,12 @@ Body::Body(
     bool is_static,
     Shape&& shape
 ) noexcept : m_position(position), m_linear_velocity(linear_velocity), m_rotation(rotation), m_angular_velocity(angular_velocity),
-    m_properties { .mass = mass, .restitution = restitution, .density = density, .area = area },
-    m_static(is_static), m_shape(shape) {}
+  m_properties { .mass = mass, .restitution = restitution, .density = density, .area = area },
+  m_static(is_static), m_shape(shape) {
+    assert(mass > 0.f);
+    assert(density > 0.f);
+    assert(area > 0.f);  
+}
 
 Body Body::circle(Meters radius, const Vec2Meters &position, bool is_static, Kilograms mass, float restitution) noexcept {
     MetersSq circle_area = std::numbers::pi_v<float> * radius * radius;
@@ -136,9 +141,13 @@ Kilograms Body::mass() const noexcept { return m_properties.mass; }
 
 bool Body::is_static() const noexcept { return m_static; }
 
+InvKilograms Body::effective_inv_mass() const noexcept {
+    return m_static ? 0.0 : (1.0 / m_properties.mass);
+}
+
 void Body::apply_impulse(Vec2NewtonSeconds impulse) noexcept {
-    if(std::isfinite(this->m_properties.mass)) {
-        this->m_linear_velocity += impulse / m_properties.mass;
+    if(this->effective_inv_mass() > 0.0f) {
+        this->m_linear_velocity += impulse * effective_inv_mass();
     }
 }
 
