@@ -3,6 +3,7 @@
 #include <cmath>
 #include <functional>
 #include <limits>
+#include <ostream>
 #include <raylib.h>
 #include <sys/cdefs.h>
 #include <utility>
@@ -334,6 +335,7 @@ struct Vec2 {
         return ::Vector2 { this->x, this->y };
     }
 
+    friend std::ostream& operator<<(std::ostream& out, const Vec2& v);
 };
 
 inline const Vec2 Vec2::Zero  = { 0.f,  0.f };
@@ -347,6 +349,10 @@ inline const Vec2 Vec2::Infinity = { std::numeric_limits<float>::infinity(),  st
 inline const Vec2 Vec2::NaN      = { std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::quiet_NaN() };
 
 inline Vec2 operator*(float scalar, const Vec2& v) noexcept { return v * scalar; }
+
+inline std::ostream& operator<<(std::ostream& out, const Vec2& v) {
+    return out << '(' << v.x << ',' << v.y << ')';
+}
 
 }
 
